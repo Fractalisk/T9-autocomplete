@@ -24,7 +24,7 @@ TriggerKeyList := "Tab`nEnter" ;list of key names separated by `n that trigger c
 ; INIT
 ;-------------------------------------------------------------------------------
 
-TrayTip, Autocorrect, Press alt-c to terminate
+TrayTip, Autocorrect, Press ctrl-c to terminate
 
 CoordMode, Caret
 SetKeyDelay, 0
