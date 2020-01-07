@@ -20,18 +20,11 @@ OtherKeyList := "'`n-" ;list of key names separated by `n that make up words
 ResetKeyList := "Esc`nSpace`nHome`nPGUP`nPGDN`nEnd`nLeft`nRight`nRButton`nMButton`n,`n.`n/`n[`n]`n;`n\`n=`n```n"""  ;list of key names separated by `n that cause suggestions to reset
 TriggerKeyList := "Tab`nEnter" ;list of key names separated by `n that trigger completion
 
-IniRead, NormalKeyList, %SettingsFile%, Keys, NormalKeyList, %NormalKeyList%
-NormalKeyList := URLDecode(NormalKeyList)
-IniRead, NumberKeyList, %SettingsFile%, Keys, NumberKeyList, %NumberKeyList%
-NumberKeyList := URLDecode(NumberKeyList)
-IniRead, OtherKeyList, %SettingsFile%, Keys, OtherKeyList, %OtherKeyList%
-OtherKeyList := URLDecode(OtherKeyList)
-IniRead, ResetKeyList, %SettingsFile%, Keys, ResetKeyList, %ResetKeyList%
-ResetKeyList := URLDecode(ResetKeyList)
-IniRead, TriggerKeyList, %SettingsFile%, Keys, TriggerKeyList, %TriggerKeyList%
-TriggerKeyList := URLDecode(TriggerKeyList)
+;-------------------------------------------------------------------------------
+; INIT
+;-------------------------------------------------------------------------------
 
-TrayTip, Autocorrect, Right click on the tray icon to stop
+TrayTip, Autocorrect, Press alt-c to terminate
 
 CoordMode, Caret
 SetKeyDelay, 0
@@ -65,9 +58,9 @@ SetHotkeys(NormalKeyList,NumberKeyList,OtherKeyList,ResetKeyList,TriggerKeyList)
 OnExit, ExitSub
 Return
 
-ExitSub:
-Gui, Settings:Submit
-
+;-------------------------------------------------------------------------------
+; WRITE
+;-------------------------------------------------------------------------------
 ;write settings
 IniWrite, % URLEncode(MaxResults), %SettingsFile%, Settings, MaxResults
 IniWrite, % URLEncode(ShowLength), %SettingsFile%, Settings, ShowLength
@@ -86,91 +79,15 @@ Length := File.Write(WordList)
 File.Length := Length
 ExitApp
 
+;-------------------------------------------------------------------------------
+; METHODS
+;-------------------------------------------------------------------------------
+
+ExitSub:
+Gui, Settings:Submit
+
 ExitScript:
 ExitApp
-
-/*settings function in tray GUI
-
-ShowSettings:
-;do not show settings window if already shown
-Gui, Settings:+LastFoundExist
-If WinExist()
-    Return
-
-Gui, Settings:Default
-Gui, Font,, Arial
-Gui, Font,, Century Gothic
-Gui, Color, White, FFF8F8
-
-Gui, Font, s24 cFFAAAA
-Gui, Add, Text, x10 y10 w540 h45 Center, a u t o c o m p l e t e
-Gui, Add, Progress, x10 y55 w540 h1 BackgroundEEDDDD, 0
-
-Gui, Font, s14 c885555
-Gui, Add, Text, x10 y73 w180 h30, RESULT LIMIT
-Gui, Add, Edit, x190 y70 w80 h30 Right Number
-Gui, Add, UpDown, Range1-100 vMaxResults, %MaxResults%
-Gui, Add, Text, x10 y113 w180 h30, TRIGGER LENGTH
-Gui, Add, Edit, x190 y110 w80 h30 Right Number
-Gui, Add, UpDown, Range1-10, %ShowLength%
-
-Gui, Add, Checkbox, x10 y150 w260 h30 Checked%CorrectCase% vCorrectCase, CASE CORRECTION
-
-Gui, Add, Edit, x10 y210 w230 h30 vNewWord
-Gui, Add, Button, x240 y210 w30 h30 Disabled vAddWord gAddWord, +
-Gui, Add, Button, x10 y250 w260 h40 Disabled vRemoveWord gRemoveWord, REMOVE SELECTED
-Gui, Font, s8, Courier New
-Gui, Add, ListView, x290 y70 w260 h220 -Hdr vWords, Words
-
-Gui, Color, White
-Gui, +ToolWindow +AlwaysOnTop
-Gui, Show, w560 h300, Autocomplete by Uberi
-
-LV_Add("", "Reading wordlist...")
-Sleep, 0
-
-;populate list with entries from wordlist
-GuiControl, -Redraw, Words
-Loop, Parse, WordList, `n
-    LV_Add("", A_LoopField)
-LV_Delete(1)
-GuiControl, +Redraw, Words
-
-GuiControl, Enable, AddWord
-GuiControl, Enable, RemoveWord
-Return
-
-SettingsGuiEscape:
-SettingsGuiClose:
-Gui, Settings:Default
-Gui, Submit
-Gui, Destroy
-Return
-*/
-
-/* Used to add or remove words to autocorrect library through tray GUI
-AddWord:
-Gui, Settings:Default
-GuiControlGet, NewWord,, NewWord
-Index := LV_Add("Select Focus", NewWord)
-LV_Modify(Index, "Vis")
-WordList .= "`n" . NewWord
-Return
-
-RemoveWord:
-Gui, Settings:Default
-TempList := "`n" . WordList . "`n"
-GuiControl, -Redraw, Words
-While, CurrentRow := LV_GetNext()
-{
-    LV_Delete(CurrentRow)
-    Position := InStr(TempList,"`n",True,1,CurrentRow)
-    TempList := SubStr(TempList,1,Position) . SubStr(TempList,InStr(TempList,"`n",True,Position + 1) + 1)
-}
-GuiControl, +Redraw, Words
-WordList := SubStr(TempList,2,-1)
-Return
-*/
 
 #IfWinExist AutoComplete ahk_class AutoHotkeyGUI
 
@@ -239,6 +156,10 @@ CurrentWord := ""
 Gui, Suggestions:Hide
 Return
 
+;-------------------------------------------------------------------------------
+; SUGGESTION WINDOW
+;-------------------------------------------------------------------------------
+
 Suggest:
 Gui, Suggestions:Default
 
@@ -293,21 +214,6 @@ If PosY + BoxHeight > ScreenHeight ;past bottom of the screen
 Gui, Show, x%PosX% y%PosY% w%MaxWidth% NoActivate ;show window
 Return
 
-hWnd := WinExist("A")
-DllCall( "RegisterShellHookWindow", UInt,Hwnd )
-MsgNum := DllCall( "RegisterWindowMessage", Str,"SHELLHOOK" )
-OnMessage( MsgNum, "ShellMessage" )
-return
-
-ShellMessage( wParam,lParam )
-{
- WinGetTitle, title, ahk_id %lParam%
- If (wParam=4 || wParam=32772) { ;HSHELL_WINDOWACTIVATED
-    CurrentWord := ""
-    Gui, Suggestions:Hide
- }
-}
-
 ;Acc standard libray to retrieve caret info from apps that handle their own UI: chrome, spotify, visual studio, etc 
 
 Acc_Init()
@@ -332,7 +238,9 @@ Acc_Location(Acc, ChildId=0, byref Position="") {
 	return	{x:NumGet(x,0,"int"), y:NumGet(y,0,"int"), w:NumGet(w,0,"int"), h:NumGet(h,0,"int")}
 }
 
-;Word completion algorithm
+;-------------------------------------------------------------------------------
+; SUGGESTION ALGORITHM
+;-------------------------------------------------------------------------------
 
 CompleteWord:
 Critical
@@ -487,6 +395,10 @@ TextWidth(String)
     DllCall("GetTextExtentPoint32","UPtr",hDC,"Str",String,"Int",StrLen(String),"UPtr",&Extent)
     Return, NumGet(Extent,0,"UInt")
 }
+
+;-------------------------------------------------------------------------------
+; ENCODING
+;-------------------------------------------------------------------------------
 
 URLEncode(Text)
 {
