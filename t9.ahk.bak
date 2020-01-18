@@ -54,15 +54,15 @@ Return
 Init:
   Suspend
 
-  If (!FileExist("standardWordList.txt")) 
-  UrlDownloadToFile https://raw.githubusercontent.com/first20hours/google-10000-english/master/google-10000-english-usa.txt, standardWordList.txt
+If (!FileExist("standardWordList.txt")) 
+UrlDownloadToFile https://raw.githubusercontent.com/first20hours/google-10000-english/master/google-10000-english-usa.txt, standardWordList.txt
 
-  FileRead standardWordList, standardWordList.txt
+FileRead standardWordList, standardWordList.txt
   If ( FileExist( "prioritywords.txt" ) ) 
     FileRead PriorityWords, prioritywords.txt
 
   ; Read all the words from dictionary and user dictionary
-  FileRead Words, standardWordList.txt
+  FileRead Words, dictionary.txt
   If FileExist( "userdictionary.txt" )
     FileRead Words2, userdictionary.txt
     

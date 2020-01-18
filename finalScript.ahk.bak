@@ -86,7 +86,7 @@ MaxResults := 5 ;maximum number of results to display
 OffsetX := 0 ;offset in caret position in X axis
 OffsetY := 18 ;offset from caret position in Y axis
 BoxHeight := 85 ;height of the suggestions box in pixels
-ShowLength := 2 ;minimum length of word before showing suggestions
+ShowLength := 0 ;minimum length of word before showing suggestions
 CorrectCase := True ;whether or not to fix uppercase or lowercase to match the suggestion
 
 TrayTip, Autocorrect, Press ctrl-c to terminate
@@ -112,9 +112,12 @@ Gui, Add, ListBox, x0 y0 h%BoxHeight% 0x100 vMatched gReplaceWord AltSubmit
 Gui, -Caption +ToolWindow +AlwaysOnTop +LastFound
 hWindow := WinExist()
 Gui, Show, h%BoxHeight% Hide, AutoComplete
+
+CurrentSequence := ""
+Gui, Suggestions:Hide
 Gui, Settings:Submit
 
-Gosub, ResetWord
+return
 
 ; Convert Strings into their numerical form for comparison
 
@@ -132,21 +135,25 @@ Char_%ThisChr% := Num%A_Index%
 
 ; Store size of array in wordCount
 wordCount := wordArray0
-global dictionary := []
+global dictionary := {}
 
 ; Make one variable for each code, with space separated list of words
 Loop %wordCount% {
+    Global 
+
+    encodedText := EncodeWord(WordArray[A_Index])
+    MsgBox %encodedText%
+    ExitApp
+    
+    If( Word_%encodedText% <> "" ) and (Not InStr( Word_%encodedText%, word))
+    Word_%encodedText% := [] 
+    
+    If( Not InStr( Word_%NumCode%, word ) )
+    Word_%NumCode% .= word
 	If (WordArray%A_Index% = "") {
 		Continue
 	}
-	encodedText := EncodeWord(WordArray%A_Index%)
-	if (!dictionary.HasKey(encodedText)) {
-		newEncodedTextList := []
-		dictionary.Push([encodedText, newEncodedTextList])
-	}
-	; Store each word as a reference to its index in the dictionary instead
-	encodedTextList := dictionary[%encodedText%]
-	encodedTextList.push(A_Index)
+	
 }
 
 ; Add some symbol words
@@ -195,22 +202,9 @@ GuiControlGet, Temp1,, Matched
 GuiControl, Choose, Matched, % Temp1 + 1
 Return
 
-!1::
-!2::
-!3::
-!4::
-!5::
-!6::
-!7::
-!8::
-!9::
-!0::
-Gui, Suggestions:Default
-KeyWait, Alt
-Key := SubStr(A_ThisHotkey, 2, 1)
-GuiControl, Choose, Matched, % Key = 0 ? 10 : Key
-Gosub, ReplaceWord
-Return
+^c::
+  ExitApp
+
 
 #IfWinExist
 
@@ -263,6 +257,11 @@ TempList := "`n" . MatchList . "`n"
 Position := InStr(TempList,"`n",0,1,Index) + 1
 NewWord := SubStr(TempList,Position,InStr(TempList,"`n",0,Position) - Position)
 
+SendWord(CurrentWOrd, NewWord, CorrectCase)
+
+gosub ResetWord
+return
+
 
 SendWord(CurrentWord,NewWord,CorrectCase = False)
 {
@@ -303,8 +302,9 @@ filteredIndexList := WordSuggestion(dictionary, CurrentSequence)
 
 ;check for a lack of matches. Otherwise generate sorted matchlist
 wordList := []
+var := filteredIndexList.MaxIndex()
 
-If (filteredIndexList.MaxIndex() == "") { 
+If (filteredIndexList.MaxIndex() == "") {
     Gui, Hide
     Return
 } else {
@@ -392,16 +392,16 @@ WordSuggestion(WordList, CurrentSequence) {
     indexList := WordList[%CurrentSequence%]
 	
 	max := 5
-	
+    
 	if (indexList.MaxIndex() == "") {
-		max := 0
+		max := 1
 	} else if (5 > indexList.MaxIndex()) {
 		max := indexList.MaxIndex()
 	}
+    
+	temp := 1
 	
-	temp := 0
-	
-	while (temp < max) {
+	while (temp <= max) {
 		filteredIndexList.push(indexList[%temp%])
 		temp += 1
 	}
