@@ -1,17 +1,20 @@
 #SingleInstance, Force
 #NoEnv
 
+SetBatchLines, -1
 ; Set working directory. Elevate permissions if directory needs to be created. Run init
-if (!FileExist("C:\Program Files\T9-autocomplete")) {
-	If !(A_IsAdmin){
-		Run *RunAs "%A_ScriptName%"
-	}
+if !FileExist("C:\Program Files\T9-autocomplete") {
+    Run *RunAs "%A_ScriptName%"
 	FileCreateDir, C:\Program Files\T9-autocomplete
 }
 SetWorkingDir, C:\Program Files\T9-autocomplete
 SendMode Input
 
-gosub Init
+Gosub Init
+Gosub Encoding
+SoundPlay *64
+
+Return
 
 ;-------------------------------------------------------------------------------
 ; Init
@@ -47,13 +50,10 @@ GlobalCapsMode  := 1      ; 123 = abc, Abc, ABC, 123
 
 CapsModeStrings := "abc,Abc,ABC,123"
 StringSplit CapsModeString, CapsModeStrings, `,
-
-OnExit, SetupGUI
 Suspend Off
-^c:: ExitApp
+OnExit, SetupGUI
 
 Return
-
 ;-------------------------------------------------------------------------------
 ; SetupHotkeys
 ;-------------------------------------------------------------------------------
@@ -115,6 +115,7 @@ Gui, Show, h%BoxHeight% Hide, AutoComplete
 Gosub, ResetWord
 
 ; Convert Strings into their numerical form for comparison
+
 Encoding:
 ; Map letter to numpad key and default characters for single digit codes
 chars := "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
@@ -151,6 +152,8 @@ Word_7 := ", . ? @ ! - + / * ( ) "" : % $ #"
 Word_77 := ":) `;) :] ?! ??"
 Word_777 := "... :-) ??? ?!? !!! --> <--"
 
+return
+
 EncodeWord(Word) {
   Result := ""
   word := RegExReplace( word, "\W", "7" ) ; Replace all non standard characters with 7s, aka a symbol
@@ -158,9 +161,7 @@ EncodeWord(Word) {
   Loop %Char0% {
     ThisChar := Char%A_Index%
     Result .= ( RegExMatch( ThisChar, "\d" ) ? ThisChar : Char_%ThisChar% ) ; concatenate the next character to the result
-  }
-  ;Debug( "WordToCode:`tIN [" . word . "] OUT [" . Result . "]" )
-  
+  }  
   Return Result
 }
 
@@ -212,29 +213,29 @@ Return
 #IfWinExist
 
 ~BackSpace::
-CurrentWord := SubStr(CurrentWord,1,-1)
+CurrentSequence := SubStr(CurrentWord,1,-1)
 Gosub, WordSuggestionUI
 Return
 
 Key:
-CurrentWord .= SubStr(A_ThisHotkey,2)
+CurrentSequence .= SubStr(A_ThisHotkey,2)
 Gosub, WordSuggestionUI
 Return
 
 ShiftedKey:
 Char := SubStr(A_ThisHotkey,3)
 StringUpper, Char, Char
-CurrentWord .= Char
+CurrentSequence .= Char
 Gosub, WordSuggestionUI
 Return
 
 NumpadKey:
-CurrentWord .= SubStr(A_ThisHotkey,8)
+CurrentSequence .= SubStr(A_ThisHotkey,8)
 Gosub, WordSuggestionUI
 Return
 
 ResetWord:
-CurrentWord := ""
+CurrentSequence := ""
 Gui, Suggestions:Hide
 Return
 
