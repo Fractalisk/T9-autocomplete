@@ -11,6 +11,8 @@ if (!FileExist("C:\Program Files\T9-autocomplete")) {
 SetWorkingDir, C:\Program Files\T9-autocomplete
 SendMode Input
 
+^c:: ExitApp
+
 gosub Init
 
 ;-------------------------------------------------------------------------------

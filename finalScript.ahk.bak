@@ -234,7 +234,7 @@ Return
 
 ResetWord:
 CurrentWord := ""
-Gui, Suggestions:WordSuggestionUI
+Gui, Suggestions:Hide
 Return
 
 
