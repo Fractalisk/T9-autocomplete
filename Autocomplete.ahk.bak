@@ -136,12 +136,14 @@ Return
 
 Key:
 CurrentWord .= SubStr(A_ThisHotkey,2)
+MsgBox ,%A_ThisHotkey%
 Gosub, Suggest
 Return
 
 ShiftedKey:
 Char := SubStr(A_ThisHotkey,3)
 StringUpper, Char, Char
+MsgBox ,%A_ThisHotkey%
 CurrentWord .= Char
 Gosub, Suggest
 Return
