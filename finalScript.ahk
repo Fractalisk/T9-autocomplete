@@ -12,6 +12,7 @@ SendMode Input
 
 Gosub Init
 Gosub Encoding
+Gosub SetupGUI
 SoundPlay *64
 
 Return
@@ -88,7 +89,6 @@ BoxHeight := 85 ;height of the suggestions box in pixels
 ShowLength := 2 ;minimum length of word before showing suggestions
 CorrectCase := True ;whether or not to fix uppercase or lowercase to match the suggestion
 
-Gui, Settings:Submit
 TrayTip, Autocorrect, Press ctrl-c to terminate
 
 CoordMode, Caret
@@ -112,7 +112,11 @@ Gui, Add, ListBox, x0 y0 h%BoxHeight% 0x100 vMatched gReplaceWord AltSubmit
 Gui, -Caption +ToolWindow +AlwaysOnTop +LastFound
 hWindow := WinExist()
 Gui, Show, h%BoxHeight% Hide, AutoComplete
-Gosub, ResetWord
+CurrentSequence := ""
+Gui, Suggestions:Hide
+Gui, Settings:Submit
+
+return
 
 ; Convert Strings into their numerical form for comparison
 
