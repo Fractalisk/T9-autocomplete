@@ -24,7 +24,8 @@ NumberKeyList := "1`n2`n3`n4`n5`n6`n7`n8`n9`n0" ;list of key names separated by 
 ResetKeyList := "Esc`nSpace`nHome`nPGUP`nPGDN`nEnd`nLeft`nRight`nRButton`nMButton`n,`n.`n/`n[`n]`n;`n\`n=`n```n"""  ;list of key names separated by `n that cause suggestions to reset
 TriggerKeyList := "Tab`nEnter" ;list of key names separated by `n that trigger completion
 
-SetHotkeys(NormalKeyList,NumberKeyList,OtherKeyList,ResetKeyList,TriggerKeyList)
+
+SetHotkeys(NumberKeyList,ResetKeyList,TriggerKeyList)
 
 ; Download and read wordlist from google github
 If (!FileExist("standardWordList.txt")) 
@@ -49,15 +50,15 @@ StringSplit CapsModeString, CapsModeStrings, `,
 
 OnExit, SetupGUI
 Suspend Off
+^c:: ExitApp
 
 Return
 
 ;-------------------------------------------------------------------------------
 ; SetupHotkeys
 ;-------------------------------------------------------------------------------
-SetHotkeys(NormalKeyList,NumberKeyList,OtherKeyList,ResetKeyList,TriggerKeyList)
+SetHotkeys(NumberKeyList,ResetKeyList,TriggerKeyList)
 {
-
 
     Loop, Parse, NumberKeyList, `n
     {

@@ -11,8 +11,6 @@ if (!FileExist("C:\Program Files\T9-autocomplete")) {
 SetWorkingDir, C:\Program Files\T9-autocomplete
 SendMode Input
 
-^c:: ExitApp
-
 gosub Init
 
 ;-------------------------------------------------------------------------------
@@ -26,7 +24,8 @@ NumberKeyList := "1`n2`n3`n4`n5`n6`n7`n8`n9`n0" ;list of key names separated by 
 ResetKeyList := "Esc`nSpace`nHome`nPGUP`nPGDN`nEnd`nLeft`nRight`nRButton`nMButton`n,`n.`n/`n[`n]`n;`n\`n=`n```n"""  ;list of key names separated by `n that cause suggestions to reset
 TriggerKeyList := "Tab`nEnter" ;list of key names separated by `n that trigger completion
 
-SetHotkeys(NormalKeyList,NumberKeyList,OtherKeyList,ResetKeyList,TriggerKeyList)
+
+SetHotkeys(NumberKeyList,ResetKeyList,TriggerKeyList)
 
 ; Download and read wordlist from google github
 If (!FileExist("standardWordList.txt")) 
@@ -51,15 +50,15 @@ StringSplit CapsModeString, CapsModeStrings, `,
 
 OnExit, SetupGUI
 Suspend Off
+^c:: ExitApp
 
 Return
 
 ;-------------------------------------------------------------------------------
 ; SetupHotkeys
 ;-------------------------------------------------------------------------------
-SetHotkeys(NormalKeyList,NumberKeyList,OtherKeyList,ResetKeyList,TriggerKeyList)
+SetHotkeys(NumberKeyList,ResetKeyList,TriggerKeyList)
 {
-
 
     Loop, Parse, NumberKeyList, `n
     {
@@ -73,7 +72,7 @@ SetHotkeys(NormalKeyList,NumberKeyList,OtherKeyList,ResetKeyList,TriggerKeyList)
 
     Hotkey, IfWinExist, AutoComplete ahk_class AutoHotkeyGUI
     Loop, Parse, TriggerKeyList, `n
-        Hotkey, %A_LoopField%, CompleteWord, UseErrorLevel
+        Hotkey, %A_LoopField%, ReplaceWord, UseErrorLevel
 }
 
 ;-------------------------------------------------------------------------------
@@ -109,7 +108,7 @@ Menu, Tray, Add, Exit, ExitScript
 Gui, Suggestions:Default
 Gui, Font, s10, Courier New
 Gui, +Delimiter`n
-Gui, Add, ListBox, x0 y0 h%BoxHeight% 0x100 vMatched gCompleteWord AltSubmit
+Gui, Add, ListBox, x0 y0 h%BoxHeight% 0x100 vMatched gReplaceWord AltSubmit
 Gui, -Caption +ToolWindow +AlwaysOnTop +LastFound
 hWindow := WinExist()
 Gui, Show, h%BoxHeight% Hide, AutoComplete
