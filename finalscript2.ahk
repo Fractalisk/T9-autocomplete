@@ -27,13 +27,6 @@ return
 Init:
 Suspend
 
-MaxResults := 5 ;maximum number of results to display
-OffsetX := 0 ;offset in caret position in X axis
-OffsetY := 18 ;offset from caret position in Y axis
-BoxHeight := 85 ;height of the suggestions box in pixels
-ShowLength := 2 ;minimum length of word before showing suggestions
-CorrectCase := True ;whether or not to fix uppercase or lowercase to match the suggestion
-
 NumberKeyList := "1`n2`n3`n4`n5`n6`n7`n8`n9`n0" ;list of key names separated by `n that make up words as well as their numpad equivalents
 ResetKeyList := "Esc`nSpace`nHome`nPGUP`nPGDN`nEnd`nLeft`nRight`nRButton`nMButton`n,`n.`n/`n[`n]`n;`n\`n=`n```n"""  ;list of key names separated by `n that cause suggestions to reset
 TriggerKeyList := "Tab`nEnter" ;list of key names separated by `n that trigger completion
@@ -128,6 +121,7 @@ EncodeWord(Word) {
 SetupGUI:
 ;App Settings
 MaxResults := 5 ;maximum number of results to display
+BoxHeight := 85 ;height of the suggestions box in pixels
 OffsetX := 0 ;offset in caret position in X axis
 OffsetY := 18 ;offset from caret position in Y axis
 ShowLength := 0 ;minimum length of word before showing suggestions
