@@ -83,14 +83,10 @@ Suspend Off
 
 Return
 
-SetHotkeys(NumberKeyList,ResetKeyList,TriggerKeyList)
-{
+SetHotkeys(NumberKeyList,ResetKeyList,TriggerKeyList) {
 
-    Loop, Parse, NumberKeyList, `n
-    {
-        Hotkey, ~%A_LoopField%, NumpadKey, UseErrorLevel
+    Loop, Parse, NumberKeyList, `n 
         Hotkey, ~Numpad%A_LoopField%, NumpadKey, UseErrorLevel
-    }
 
     Loop, Parse, ResetKeyList, `n
         Hotkey, ~*%A_LoopField%, ResetWord, UseErrorLevel
@@ -110,9 +106,8 @@ RegisterWordVariable(word) {
   Global 
 
   NumCode := EncodeWord(word)
-  If( Not InStr( Word_%NumCode%, word ) )
+  If(!InStr(Word_%NumCode%, word))
     Word_%NumCode% .= word . "`n"
-
 }
 
 EncodeWord(Word) {
@@ -135,9 +130,7 @@ SetupGUI:
 MaxResults := 5 ;maximum number of results to display
 OffsetX := 0 ;offset in caret position in X axis
 OffsetY := 18 ;offset from caret position in Y axis
-BoxHeight := 85 ;height of the suggestions box in pixels
 ShowLength := 0 ;minimum length of word before showing suggestions
-CorrectCase := True ;whether or not to fix uppercase or lowercase to match the suggestion
 
 TrayTip, Autocorrect, Press ctrl-c to terminate
 
@@ -192,12 +185,12 @@ TempList := "`n" . MatchList . "`n"
 Position := InStr(TempList,"`n",0,1,Index) + 1
 NewWord := SubStr(TempList,Position,InStr(TempList,"`n",0,Position) - Position)
 
-SendWord(CurrentWord,NewWord,CorrectCase)
+SendWord(CurrentWord,NewWord)
 
 Gosub, ResetWord
 Return
 
-SendWord(CurrentWord,NewWord,CorrectCase = False) {
+SendWord(CurrentWord,NewWord) {
 
     Position := 1
     CaseSense := A_StringCaseSense
@@ -259,7 +252,7 @@ Gosub, Suggest
 Return
 
 NumpadKey:
-CurrentWord .= SubStr(A_ThisHotkey,2) ;8
+CurrentWord .= SubStr(A_ThisHotkey,8) ;8
 Gosub, Suggest
 Return
 

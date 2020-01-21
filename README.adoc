@@ -1,13 +1,21 @@
-= ITS RARE BROS ALL THE WAY DOWN
+= T9 Predictive text AHK script
 
-image::logofinal.gif[width="10"]
-image::logofinal.gif[width="20"]
-image::logofinal.gif[width="40"]
-image::logofinal.gif[width="80"]
-image::logofinal.gif[width="160"]
-image::logofinal.gif[width="320"]
+== Introduction
+We coded a predictive text algorithm that suggests words of similar character length on the go through an
+interactive GUI as the user types through autohotkey. As including the entire standard english dictionary
+into the program makes it extremely space inefficient, we instead obtained a list of the 10000 most used english
+words derived from Google's trillion words corpus, which decreased the size of the word dictionary from 6mb
+to 74 kb.
+
+== Demo
+
+== Credits
+
+* https://autohotkey.com/board/topic/30657-numpad9-t9-input-with-the-numpad/[Sample T9 numpad keyboard written by Icarus]
+* https://github.com/Uberi/Autocomplete[Sample autocomplete script written by Uberi]
+* https://autohotkey.com/board/topic/22058-accessibility-standard-library/[AHK ACC standard accessibility library]
+* https://github.com/first20hours/google-10000-english[Google trillion word Corpus]
+
+= We still have space here so heres an excellent gif of one of our team members
+
 image::logofinal.gif[width="640"]
-image::logofinal.gif[width="1280"]
-image::logofinal.gif[width="2560"]
-
-*ME JUNJIE ME YOYO ME STONKS*
