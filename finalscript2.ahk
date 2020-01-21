@@ -38,6 +38,9 @@ SetHotkeys(NumberKeyList,ResetKeyList,TriggerKeyList)
 If (!FileExist("standardWordList.txt")) 
 UrlDownloadToFile https://raw.githubusercontent.com/first20hours/google-10000-english/master/google-10000-english-usa.txt, standardWordList.txt
 
+If (!FileExist("autocorrect.ico")) 
+UrlDownloadToFile https://raw.githubusercontent.com/Fractalisk/T9-autocomplete/master/autocorrect.ico, autocorrect.ico
+
 FileRead standardWordList, standardWordList.txt
 
 ; Read user defined wordlist, if exists
@@ -127,7 +130,8 @@ OffsetX := 0 ;offset in caret position in X axis
 OffsetY := 18 ;offset from caret position in Y axis
 ShowLength := 0 ;minimum length of word before showing suggestions
 
-TrayTip, Autocorrect, Press ctrl-c to terminate
+TrayTip, Autocorrect, Press ctrl-shift-c to terminate
+Menu, Tray, Icon, autocorrect.ico
 
 CoordMode, Caret
 SetKeyDelay, 0
@@ -243,7 +247,7 @@ if (StrLen(CurrentWord) > 0) {
 }
 Return
 
-^c::
+^+c::
 Gosub ExitScript
 
 ShiftedKey:
