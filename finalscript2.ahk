@@ -47,6 +47,7 @@ FileRead userWordList, userWordList.txt
 ; Concatenate the two wordlists
 words := standardWordList . userWordList
 
+
 Chars := "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789"
 Nums  := "88899944455566611112223333rtyijm,ad"
 StringSplit Chr, Chars
@@ -120,7 +121,7 @@ EncodeWord(Word) {
 
 SetupGUI:
 ;App Settings
-MaxResults := 5 ;maximum number of results to display
+MaxResults := 20 ;maximum number of results to display
 BoxHeight := 85 ;height of the suggestions box in pixels
 OffsetX := 0 ;offset in caret position in X axis
 OffsetY := 18 ;offset from caret position in Y axis
@@ -235,8 +236,15 @@ Return
 
 ~BackSpace::
 CurrentWord := SubStr(CurrentWord,1,-1)
-Gosub, Suggest
+if (StrLen(CurrentWord) > 0) {
+    Gosub, Suggest
+} else {
+    Gosub, ResetWord
+}
 Return
+
+^c::
+Gosub ExitScript
 
 ShiftedKey:
 Char := SubStr(A_ThisHotkey,3)
@@ -311,24 +319,15 @@ Return
 ;Suggestion algorithm
 
 Suggest(CurrentWord) {
-    /*
-    Pattern := RegExReplace(CurrentWord,"S).","$0.*") ;subsequence matching pattern
-
-    ;treat accented characters as equivalent to their unaccented counterparts
-    Pattern := RegExReplace(Pattern,"S)[a" . Chr(224) . Chr(226) . "]","[a" . Chr(224) . Chr(226) . "]")
-    Pattern := RegExReplace(Pattern,"S)[c" . Chr(231) . "]","[c" . Chr(231) . "]")
-    Pattern := RegExReplace(Pattern,"S)[e" . Chr(233) . Chr(232) . Chr(234) . Chr(235) . "]","[e" . Chr(233) . Chr(232) . Chr(234) . Chr(235) . "]")
-    Pattern := RegExReplace(Pattern,"S)[i" . Chr(238) . Chr(239) . "]","[i" . Chr(238) . Chr(239) . "]")
-    Pattern := RegExReplace(Pattern,"S)[o" . Chr(244) . "]","[o" . Chr(244) . "]")
-    Pattern := RegExReplace(Pattern,"S)[u" . Chr(251) . Chr(249) . "]","[u" . Chr(251) . Chr(249) . "]")
-
-    Pattern := "`nimS)^" . Pattern ;match options
-    */
-
     ;search for words matching the pattern
     tempVar := Word_%CurrentWord%
+    loop, 10 {
+        tempInt := A_Index - 1
+        tempWord = %CurrentWord%%tempInt%
+        tempVar .= Word_%tempWord%
+    }
+    
     MatchList := SubStr(tempVar,1,-1) ;remove trailing delimiter
-
     Return, MatchList
 }
 
